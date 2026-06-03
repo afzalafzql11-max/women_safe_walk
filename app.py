@@ -820,13 +820,19 @@ if st.session_state.logged_in:
     user_menu = st.sidebar.selectbox(
         "User Menu",
         [
-            "Dashboard",
-            "Profile",
-            "Add Route",
-            "Find Companion",
-            "Requests",
-            "Logout"
-        ]
+        "Dashboard",
+        "Profile",
+        "Add Route",
+        "Find Companion",
+        "Requests",
+        "Messages",
+        "SOS Center",
+        "Emergency History",
+        "Family Alerts",
+        "Nearby Help",
+        "Logout"
+    ]
+)
     )
 
     # ==============================================
