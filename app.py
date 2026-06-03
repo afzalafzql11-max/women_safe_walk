@@ -1277,7 +1277,7 @@ if st.session_state.logged_in:
 # MESSAGES
 # ==============================================
 
-elif user_menu == "Messages":
+  elif user_menu == "Messages":
 
     st.title("💬 SafeWalk Chat")
 
