@@ -83,8 +83,7 @@ travel_time TEXT
 )
 """)
 
-# ==================================================
-# COMPANION REQUESTS
+# ==================================================\n# COMPANION REQUESTS
 # ==================================================
 
 cursor.execute("""
@@ -537,7 +536,8 @@ elif menu == "Admin Login":
 
                 df = pd.DataFrame(
                     users,
-                    columns=[
+                    columns=
+                        [
                         "ID",
                         "Name",
                         "Email",
@@ -605,7 +605,8 @@ elif menu == "Admin Login":
 
                 df = pd.DataFrame(
                     data,
-                    columns=[
+                    columns=
+                        [
                         "User",
                         "City",
                         "Source",
@@ -638,7 +639,8 @@ elif menu == "Admin Login":
 
                 df = pd.DataFrame(
                     data,
-                    columns=[
+                    columns=
+                        [
                         "ID",
                         "Sender",
                         "Receiver",
@@ -676,7 +678,8 @@ elif menu == "Admin Login":
 
                 df = pd.DataFrame(
                     messages,
-                    columns=[
+                    columns=
+                        [
                         "Sender",
                         "Receiver",
                         "Message",
@@ -759,7 +762,8 @@ elif menu == "Admin Login":
 
                 city_df = pd.DataFrame(
                     city_data,
-                    columns=[
+                    columns=
+                        [
                         "City",
                         "Users"
                     ]
@@ -781,7 +785,8 @@ elif menu == "Admin Login":
 
                 req_df = pd.DataFrame(
                     req_data,
-                    columns=[
+                    columns=
+                        [
                         "Status",
                         "Count"
                     ]
@@ -833,11 +838,11 @@ if st.session_state.logged_in:
         "Logout"
     ]
 )
-    
 
-    # ==============================================
-    # DASHBOARD
-    # ==============================================
+
+    # ==============================================D
+    # DASHBOARDD
+    # ==============================================D
 
     if user_menu == "Dashboard":
 
@@ -882,9 +887,9 @@ if st.session_state.logged_in:
             "Use the sidebar to access all features."
         )
 
-    # ==============================================
-    # PROFILE
-    # ==============================================
+    # ==============================================D
+    # PROFILED
+    # ==============================================D
 
     elif user_menu == "Profile":
 
@@ -947,7 +952,8 @@ if st.session_state.logged_in:
 
             df = pd.DataFrame(
                 family_data,
-                columns=[
+                columns=
+                    [
                     "Name",
                     "Relation",
                     "Phone"
@@ -962,9 +968,9 @@ if st.session_state.logged_in:
                 "No family members added"
             )
 
-    # ==============================================
-    # ADD ROUTE
-    # ==============================================
+    # ==============================================D
+    # ADD ROUTED
+    # ==============================================D
 
     elif user_menu == "Add Route":
 
@@ -1014,9 +1020,9 @@ if st.session_state.logged_in:
                 "Route Saved"
             )
 
-    # ==============================================
-    # FIND COMPANION
-    # ==============================================
+    # ==============================================D
+    # FIND COMPANIOND
+    # ==============================================D
 
     elif user_menu == "Find Companion":
 
@@ -1076,6 +1082,8 @@ if st.session_state.logged_in:
 
                     email = row[0]
                     name = row[1]
+                    button_key = f"send_request_{email}"
+                    print(f"Generated button key: {button_key}") # Added print statement
 
                     st.write("---")
 
@@ -1100,8 +1108,12 @@ if st.session_state.logged_in:
                     )
 
                     if st.button(
-                        f"Send Request {email}"
+                        f"Send Request {email}",
+                        key=button_key
                     ):
+
+                        # Debugging: Print sender and receiver emails before insertion
+                        print(f"Sending request from: {st.session_state.user_email} to: {email}")
 
                         cursor.execute("""
                         INSERT INTO requests(
@@ -1123,13 +1135,25 @@ if st.session_state.logged_in:
                             "Request Sent"
                         )
 
-    # ==============================================
-    # REQUESTS
-    # ==============================================
+    # ==============================================D
+    # REQUESTSD
+    # ==============================================D
 
     elif user_menu == "Requests":
 
         st.title("📨 Companion Requests")
+
+        # --- Temporary: Display all requests for debugging ---
+        st.subheader("All Requests (for Debugging)")
+        cursor.execute("SELECT * FROM requests")
+        all_requests = cursor.fetchall()
+        if all_requests:
+            df_all = pd.DataFrame(all_requests, columns=["ID", "Sender", "Receiver", "Status"])
+            st.dataframe(df_all, use_container_width=True)
+        else:
+            st.info("No requests found in the database.")
+        st.write("---")
+        # ---------------------------------------------------
 
         st.subheader(
             "Incoming Requests"
@@ -1176,7 +1200,7 @@ if st.session_state.logged_in:
                 with col1:
 
                     if st.button(
-                        f"Accept {request_id}"
+                        f"Accept {request_id}", key=f"accept_req_{request_id}"
                     ):
 
                         cursor.execute("""
@@ -1196,7 +1220,7 @@ if st.session_state.logged_in:
                 with col2:
 
                     if st.button(
-                        f"Reject {request_id}"
+                        f"Reject {request_id}", key=f"reject_req_{request_id}"
                     ):
 
                         cursor.execute("""
@@ -1244,7 +1268,8 @@ if st.session_state.logged_in:
 
             df = pd.DataFrame(
                 sent,
-                columns=[
+                columns=
+                    [
                     "Receiver",
                     "Status"
                 ]
@@ -1258,9 +1283,9 @@ if st.session_state.logged_in:
                 "No sent requests"
             )
 
-    # ==============================================
-    # LOGOUT
-    # ==============================================
+    # ==============================================D
+    # LOGOUTD
+    # ==============================================D
 
     elif user_menu == "Logout":
 
@@ -1273,348 +1298,352 @@ if st.session_state.logged_in:
         )
 
         st.rerun()
-      # ==============================================
-# MESSAGES
-# ==============================================
+
+    # ==============================================D
+    # MESSAGESD
+    # ==============================================D
 
     elif user_menu == "Messages":
+        st.title("💬 SafeWalk Chat")
 
-    st.title("💬 SafeWalk Chat")
-
-    partner = st.text_input(
+        partner = st.text_input(
         "Enter User Email"
-    )
+           )
 
-    st.write("---")
+        st.write("---")
 
-    message = st.text_input(
-        "Message"
-    )
+        message = st.text_input(
+            "Message"
+        )
 
-    if st.button("Send Message"):
+        if st.button("Send Message"):
 
-        if partner and message:
+            if partner and message:
+
+                cursor.execute("""
+                INSERT INTO messages(
+                sender,
+                receiver,
+                message,
+                time
+                )
+                VALUES(?,?,?,?)
+                """,
+                (
+                    st.session_state.user_email,
+                    partner,
+                    message,
+                    str(datetime.datetime.now())
+                ))
+
+                conn.commit()
+
+                st.success(
+                    "Message Sent"
+                )
+
+        st.write("---")
+
+        st.subheader("Inbox")
+
+        cursor.execute("""
+        SELECT sender,
+        message,
+        time
+
+        FROM messages
+
+        WHERE receiver=?
+
+        ORDER BY id DESC
+        """,
+        (
+            st.session_state.user_email,
+        ))
+
+        inbox = cursor.fetchall()
+
+        if inbox:
+
+            for msg in inbox:
+
+                st.info(
+                    f"""
+                    From: {msg[0]}
+
+                    {msg[1]}
+
+                    {msg[2]}
+                    """
+                )
+
+        else:
+
+            st.warning(
+                "No Messages"
+            )
+
+
+
+    # ==============================================D
+    # SOS CENTERD
+    # ==============================================D
+
+    elif user_menu == "SOS Center":
+
+        st.title("🚨 Emergency SOS")
+
+        st.error(
+            "Use only during emergencies"
+        )
+
+        location = st.text_input(
+            "Current Location"
+        )
+
+        threat_image = st.camera_input(
+            "Capture Threat Image"
+        )
+
+        if st.button(
+            "SEND SOS ALERT"
+        ):
+
+            image_path = ""
+
+            if threat_image:
+
+                filename = (
+                    "SOS_"
+                    +
+                    str(
+                        int(
+                            datetime.datetime.now().timestamp()
+                        )
+                    )
+                    +
+                    ".jpg"
+                )
+
+                image_path = save_image(
+                    threat_image,
+                    filename
+                )
 
             cursor.execute("""
-            INSERT INTO messages(
-            sender,
-            receiver,
-            message,
-            time
+            INSERT INTO sos_alerts(
+            user_email,
+            location,
+            image_path,
+            alert_time
             )
             VALUES(?,?,?,?)
             """,
             (
                 st.session_state.user_email,
-                partner,
-                message,
+                location,
+                image_path,
                 str(datetime.datetime.now())
             ))
+
+            cursor.execute("""
+            SELECT member_name,
+            phone
+            FROM family
+
+            WHERE user_email=?
+            """,
+            (
+                st.session_state.user_email,
+            ))
+
+            family_members = cursor.fetchall()
+
+            for member in family_members:
+
+                cursor.execute("""
+                INSERT INTO family_alerts(
+                user_email,
+                family_name,
+                family_phone,
+                alert_time,
+                status
+                )
+                VALUES(?,?,?,?,?)D
+                """,
+                (
+                    st.session_state.user_email,
+                    member[0],
+                    member[1],
+                    str(datetime.datetime.now()),
+                    "ALERT SENT"
+                ))
 
             conn.commit()
 
             st.success(
-                "Message Sent"
+                "Emergency Alert Activated"
             )
 
-    st.write("---")
-
-    st.subheader("Inbox")
-
-    cursor.execute("""
-    SELECT sender,
-    message,
-    time
-
-    FROM messages
-
-    WHERE receiver=?
-
-    ORDER BY id DESC
-    """,
-    (
-        st.session_state.user_email,
-    ))
-
-    inbox = cursor.fetchall()
-
-    if inbox:
-
-        for msg in inbox:
-
-            st.info(
-                f"""
-                From: {msg[0]}
-
-                {msg[1]}
-
-                {msg[2]}
-                """
+            st.warning(
+                "Family Members Notified"
             )
 
-    else:
+    # ==============================================D
+    # EMERGENCY HISTORYD
+    # ==============================================D
 
-        st.warning(
-            "No Messages"
-        )
+    elif user_menu == "Emergency History":
 
-# ==============================================
-# SOS CENTER
-# ==============================================
-
-elif user_menu == "SOS Center":
-
-    st.title("🚨 Emergency SOS")
-
-    st.error(
-        "Use only during emergencies"
-    )
-
-    location = st.text_input(
-        "Current Location"
-    )
-
-    threat_image = st.camera_input(
-        "Capture Threat Image"
-    )
-
-    if st.button(
-        "SEND SOS ALERT"
-    ):
-
-        image_path = ""
-
-        if threat_image:
-
-            filename = (
-                "SOS_"
-                +
-                str(
-                    int(
-                        datetime.datetime.now().timestamp()
-                    )
-                )
-                +
-                ".jpg"
-            )
-
-            image_path = save_image(
-                threat_image,
-                filename
-            )
+        st.title("📋 Emergency History")
 
         cursor.execute("""
-        INSERT INTO sos_alerts(
-        user_email,
+        SELECT
         location,
         image_path,
         alert_time
-        )
-        VALUES(?,?,?,?)
-        """,
-        (
-            st.session_state.user_email,
-            location,
-            image_path,
-            str(datetime.datetime.now())
-        ))
 
-        cursor.execute("""
-        SELECT member_name,
-        phone
-        FROM family
+        FROM sos_alerts
 
         WHERE user_email=?
+
+        ORDER BY id DESC
         """,
         (
             st.session_state.user_email,
         ))
 
-        family_members = cursor.fetchall()
+        alerts = cursor.fetchall()
 
-        for member in family_members:
+        if alerts:
 
-            cursor.execute("""
-            INSERT INTO family_alerts(
-            user_email,
-            family_name,
-            family_phone,
-            alert_time,
-            status
+            for alert in alerts:
+
+                st.write("---")
+
+                st.write(
+                    f"Location: {alert[0]}"
+                )
+
+                st.write(
+                    f"Time: {alert[2]}"
+                )
+
+                if alert[1]:
+
+                    try:
+
+                        st.image(
+                            alert[1],
+                            width=300
+                        )
+
+                    except:
+                        pass
+
+        else:
+
+            st.info(
+                "No Alerts Found"
             )
-            VALUES(?,?,?,?,?)
-            """,
-            (
-                st.session_state.user_email,
-                member[0],
-                member[1],
-                str(datetime.datetime.now()),
-                "ALERT SENT"
-            ))
 
-        conn.commit()
+    # ==============================================D
+    # FAMILY ALERT STATUSD
+    # ==============================================D
+
+    elif user_menu == "Family Alerts":
+
+        st.title("👨‍👩‍👧 Family Alert Records")
+
+        cursor.execute("""
+        SELECT
+        family_name,
+        family_phone,
+        alert_time,
+        status
+
+        FROM family_alerts
+
+        WHERE user_email=?
+
+        ORDER BY id DESC
+        """,
+        (
+            st.session_state.user_email,
+        ))
+
+        alerts = cursor.fetchall()
+
+        if alerts:
+
+            df = pd.DataFrame(
+                alerts,
+                columns=
+                    [
+                    "Family Member",
+                    "Phone",
+                    "Time",
+                    "Status"
+                ]
+            )
+
+            st.dataframe(df)
+
+        else:
+
+            st.info(
+                "No Alerts Found"
+            )
+
+    # ==============================================D
+    # NEARBY HELPD
+    # ==============================================D
+
+    elif user_menu == "Nearby Help":
+
+        st.title("🏥 Nearby Help Centers")
 
         st.success(
-            "Emergency Alert Activated"
+            "Emergency Support Directory"
         )
 
-        st.warning(
-            "Family Members Notified"
-        )
+        help_data = [
+            [
+                "Police Station",
+                "100"
+            ],
+            [
+                "Women Helpline",
+                "1091"
+            ],
+            [
+                "Emergency",
+                "112"
+            ],
+            [
+                "Ambulance",
+                "108"
+            ],
+            [
+                "Child Helpline",
+                "1098"
+            ]
+        ]
 
-# ==============================================
-# EMERGENCY HISTORY
-# ==============================================
-
-elif user_menu == "Emergency History":
-
-    st.title("📋 Emergency History")
-
-    cursor.execute("""
-    SELECT
-    location,
-    image_path,
-    alert_time
-
-    FROM sos_alerts
-
-    WHERE user_email=?
-
-    ORDER BY id DESC
-    """,
-    (
-        st.session_state.user_email,
-    ))
-
-    alerts = cursor.fetchall()
-
-    if alerts:
-
-        for alert in alerts:
-
-            st.write("---")
-
-            st.write(
-                f"Location: {alert[0]}"
-            )
-
-            st.write(
-                f"Time: {alert[2]}"
-            )
-
-            if alert[1]:
-
-                try:
-
-                    st.image(
-                        alert[1],
-                        width=300
-                    )
-
-                except:
-                    pass
-
-    else:
-
-        st.info(
-            "No Alerts Found"
-        )
-
-# ==============================================
-# FAMILY ALERT STATUS
-# ==============================================
-
-elif user_menu == "Family Alerts":
-
-    st.title("👨‍👩‍👧 Family Alert Records")
-
-    cursor.execute("""
-    SELECT
-    family_name,
-    family_phone,
-    alert_time,
-    status
-
-    FROM family_alerts
-
-    WHERE user_email=?
-
-    ORDER BY id DESC
-    """,
-    (
-        st.session_state.user_email,
-    ))
-
-    alerts = cursor.fetchall()
-
-    if alerts:
-
-        df = pd.DataFrame(
-            alerts,
-            columns=[
-                "Family Member",
-                "Phone",
-                "Time",
-                "Status"
+        help_df = pd.DataFrame(
+            help_data,
+            columns=
+                [
+                "Service",
+                "Number"
             ]
         )
 
-        st.dataframe(df)
-
-    else:
-
-        st.info(
-            "No Alerts Found"
+        st.dataframe(
+            help_df,
+            use_container_width=True
         )
 
-# ==============================================
-# NEARBY HELP
-# ==============================================
-
-elif user_menu == "Nearby Help":
-
-    st.title("🏥 Nearby Help Centers")
-
-    st.success(
-        "Emergency Support Directory"
-    )
-
-    help_data = [
-        [
-            "Police Station",
-            "100"
-        ],
-        [
-            "Women Helpline",
-            "1091"
-        ],
-        [
-            "Emergency",
-            "112"
-        ],
-        [
-            "Ambulance",
-            "108"
-        ],
-        [
-            "Child Helpline",
-            "1098"
-        ]
-    ]
-
-    help_df = pd.DataFrame(
-        help_data,
-        columns=[
-            "Service",
-            "Number"
-        ]
-    )
-
-    st.dataframe(
-        help_df,
-        use_container_width=True
-    )
-
-    st.info(
-        "Future Version: GPS Based Nearby Hospitals, Medical Stores and Police Stations."
-    )
+        st.info(
+            "Future Version: GPS Based Nearby Hospitals, Medical Stores and Police Stations."
+        )
