@@ -1144,7 +1144,7 @@ if st.session_state.logged_in:
         st.title("📨 Companion Requests")
 
         # --- Temporary: Display all requests for debugging ---
-        st.subheader("All Requests (for Debugging)")
+        st.subheader("All Requests (for Searching similar)")
         cursor.execute("SELECT * FROM requests")
         all_requests = cursor.fetchall()
         if all_requests:
