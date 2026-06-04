@@ -83,7 +83,8 @@ travel_time TEXT
 )
 """)
 
-# ==================================================\n# COMPANION REQUESTS
+# ==================================================
+# COMPANION REQUESTS
 # ==================================================
 
 cursor.execute("""
@@ -232,8 +233,7 @@ if menu == "Home":
     ✅ Admin Dashboard
     """)
 
-# ==================================================
-# USER SIGNUP
+# ==================================================\n# USER SIGNUP
 # ==================================================
 
 elif menu == "Signup":
@@ -1032,13 +1032,17 @@ if st.session_state.logged_in:
             "City"
         )
 
-        source_search = st.text_input(
-            "Source"
-        )
+        # Removed source_search and destination_search as they were not being used in the SQL query.
+        # source_search = st.text_input(
+        #     "Source"
+        # )
 
-        destination_search = st.text_input(
-            "Destination"
-        )
+        # destination_search = st.text_input(
+        #     "Destination"
+        # )
+
+        if "companion_results" not in st.session_state:
+            st.session_state.companion_results = []
 
         if st.button(
             "Search Companion"
@@ -1068,72 +1072,68 @@ if st.session_state.logged_in:
                 st.session_state.user_email
             ))
 
-            results = cursor.fetchall()
+            st.session_state.companion_results = cursor.fetchall()
 
-            if len(results) == 0:
+        results = st.session_state.companion_results
 
-                st.warning(
-                    "No companion found"
+        if results:
+
+            for row in results:
+
+                email = row[0]
+                name = row[1]
+
+                st.write("---")
+
+                st.write(
+                    f"### {name}"
                 )
 
-            else:
+                st.write(
+                    f"Email: {email}"
+                )
 
-                for row in results:
+                st.write(
+                    f"Source: {row[2]}"
+                )
 
-                    email = row[0]
-                    name = row[1]
-                    button_key = f"send_request_{email}"
-                    print(f"Generated button key: {button_key}") # Added print statement
+                st.write(
+                    f"Destination: {row[3]}"
+                )
 
-                    st.write("---")
+                st.write(
+                    f"Time: {row[4]}"
+                )
 
-                    st.write(
-                        f"### {name}"
+                if st.button(
+                    f"Send Request {email}",
+                    key=f"req_{email}"
+                ):
+
+                    cursor.execute("""
+                    INSERT INTO requests(
+                    sender_email,
+                    receiver_email,
+                    status
+                    )
+                    VALUES(?,?,?)
+                    """,
+                    (
+                        st.session_state.user_email,
+                        email,
+                        "Pending"
+                    ))
+
+                    conn.commit()
+
+                    st.success(
+                        "Request Sent Successfully"
                     )
 
-                    st.write(
-                        f"Email: {email}"
-                    )
+                    st.rerun()
 
-                    st.write(
-                        f"Source: {row[2]}"
-                    )
-
-                    st.write(
-                        f"Destination: {row[3]}"
-                    )
-
-                    st.write(
-                        f"Time: {row[4]}"
-                    )
-
-                    if st.button(
-                        f"Send Request {email}",
-                        key=button_key
-                    ):
-
-                        # Debugging: Print sender and receiver emails before insertion
-                        print(f"Sending request from: {st.session_state.user_email} to: {email}")
-
-                        cursor.execute("""
-                        INSERT INTO requests(
-                        sender_email,
-                        receiver_email,
-                        status
-                        )
-                        VALUES(?,?,?)
-                        """,
-                        (
-                            st.session_state.user_email,
-                            email,
-                            "Pending"
-                        ))
-
-                        conn.commit()
-
-                        st.success(
-                            "Request Sent"
-                        )
+        else:
+            st.info("Search for companions")
 
     # ==============================================D
     # REQUESTSD
@@ -1216,6 +1216,7 @@ if st.session_state.logged_in:
                         st.success(
                             "Request Accepted"
                         )
+                        st.rerun() # Added rerun
 
                 with col2:
 
@@ -1236,6 +1237,7 @@ if st.session_state.logged_in:
                         st.error(
                             "Request Rejected"
                         )
+                        st.rerun() # Added rerun
 
         else:
 
